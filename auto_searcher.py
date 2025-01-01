@@ -11,7 +11,6 @@ from selenium.webdriver.common.keys import Keys  # 파일 상단에 추가
 import time
 
 def initialize():
-	load_dotenv()
 	options = Options()
 	options.add_argument("--no-sandbox")
 	options.add_argument("--disable-dev-shm-usage")
@@ -41,9 +40,9 @@ def setting_search_condition(driver, wait):
 
 	# Select date range
 	period_start_input = wait.until(EC.presence_of_element_located((By.ID, "search-begin-date")))
-	driver.execute_script("arguments[0].value = arguments[1];", period_start_input, '2024-01-01')
+	driver.execute_script("arguments[0].value = arguments[1];", period_start_input, os.getenv('BEGIN_DATE'))
 	period_end_input = wait.until(EC.presence_of_element_located((By.ID, "search-end-date")))
-	driver.execute_script("arguments[0].value = arguments[1];", period_end_input, '2024-12-31')
+	driver.execute_script("arguments[0].value = arguments[1];", period_end_input, os.getenv('END_DATE'))
 	
 	# Select press tab and national daily newspapers
 	wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[href="#srch-tab2"]'))).click()
@@ -110,26 +109,27 @@ def search_with_keywords(driver, wait, or_keywords, required_keywords):
 	download_button.click()
 
 def main():
-    or_keywords = "살인, 살해, 숨지게, 숨져, 숨진, 방화, 불질러, 흉기, 둔기, 찔러, 목졸라, 납치, 감금, 폭행, 때려, 유기, 자살, 자해, 일가족, 가정불화, 부부싸움, 가정폭력, 데이트폭력, 교제폭력, 교제살인, 교제, 중상, 상해, 스토킹, 무차별, 무자비, 처음, 갑자기, 이웃, 수차례, 일면식, 둔기, 시비, 일방적, 묻지마"
-    required_keywords = ['여성', '여자', '아내', '부인', '전처', '동거녀', '내연녀', '애인', '여자친구', '여직원', '여학생','여고생','여대생','페미니스트']
+	load_dotenv() 
+	or_keywords = "살인, 살해, 숨지게, 숨져, 숨진, 방화, 불질러, 흉기, 둔기, 찔러, 목졸라, 납치, 감금, 폭행, 때려, 유기, 자살, 자해, 일가족, 가정불화, 부부싸움, 가정폭력, 데이트폭력, 교제폭력, 교제살인, 교제, 중상, 상해, 스토킹, 무차별, 무자비, 처음, 갑자기, 이웃, 수차례, 일면식, 둔기, 시비, 일방적, 묻지마"
+	required_keywords = ['여성', '여자', '아내', '부인', '전처', '동거녀', '내연녀', '애인', '여자친구', '여직원', '여학생','여고생','여대생','페미니스트']
 
-    driver, wait = initialize()
-    login(driver, wait)    
-    setting_search_condition(driver, wait)
-    
-    try:
-        for required_keyword in required_keywords:
-            try:
-                search_with_keywords(driver, wait, or_keywords, required_keyword)
-                print("브라우저가 열려 있습니다. 다운로드가 완료되면 Enter를 눌러 다음 검색으로 넘어가세요.")
-                input()
-            except Exception as e:
-                print(f"오류 발생: {e}")
-                input()
-            finally:
-                continue
-    finally:
-        driver.quit()
+	driver, wait = initialize()
+	login(driver, wait)    
+	setting_search_condition(driver, wait)
+	
+	try:
+		for required_keyword in required_keywords:
+			try:
+				search_with_keywords(driver, wait, or_keywords, required_keyword)
+				print("브라우저가 열려 있습니다. 다운로드가 완료되면 Enter를 눌러 다음 검색으로 넘어가세요.")
+				input()
+			except Exception as e:
+				print(f"오류 발생: {e}")
+				input()
+			finally:
+				continue
+	finally:
+		driver.quit()
 
 if __name__ == "__main__":
 	main()
