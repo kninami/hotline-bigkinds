@@ -34,7 +34,7 @@ def login(driver, wait):
 	wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button#login-btn"))).click()
 	time.sleep(2)
 
-def search_with_keywords(driver, wait, or_keywords, required_keywords):
+def setting_search_condition(driver, wait):
 	# Select search tab
 	driver.get("https://www.bigkinds.or.kr/v2/news/index.do")
 	wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[href="#srch-tab1"]'))).click()
@@ -80,6 +80,14 @@ def search_with_keywords(driver, wait, or_keywords, required_keywords):
 	# Select detailed search tab
 	wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "div.tab5"))).click()
 
+def search_with_keywords(driver, wait, or_keywords, required_keywords):
+	# Check and click collapse-step-1 if not open
+	step1_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "button#collapse-step-1")))
+	if 'open' not in step1_element.get_attribute('class'):
+		# JavaScript를 사용하여 직접 클릭 이벤트 실행
+		driver.execute_script("arguments[0].click();", step1_element)
+		time.sleep(1)
+
 	# Input search or_keywords
 	keyword_input = wait.until(EC.presence_of_element_located((By.ID, "orKeyword1")))
 	keyword_input.clear()
@@ -107,6 +115,8 @@ def main():
 
     driver, wait = initialize()
     login(driver, wait)    
+    setting_search_condition(driver, wait)
+    
     try:
         for required_keyword in required_keywords:
             try:
