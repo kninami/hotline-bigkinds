@@ -110,17 +110,19 @@ def search_with_keywords(driver, wait, or_keywords, required_keywords):
 
 def main():
 	load_dotenv() 
-	or_keywords = "살인, 살해, 숨지게, 숨져, 숨진, 방화, 불질러, 흉기, 둔기, 찔러, 목졸라, 납치, 감금, 폭행, 때려, 유기, 자살, 자해, 일가족, 가정불화, 부부싸움, 가정폭력, 데이트폭력, 교제폭력, 교제살인, 교제, 중상, 상해, 스토킹, 무차별, 무자비, 처음, 갑자기, 이웃, 수차례, 일면식, 둔기, 시비, 일방적, 묻지마"
-	required_keywords = ['여성', '여자', '아내', '부인', '전처', '동거녀', '내연녀', '애인', '여자친구', '여직원', '여학생','여고생','여대생','페미니스트']
+	or_keywords = os.getenv('OR_KEYWORDS')
+	required_keywords = os.getenv('REQUIRED_KEYWORDS')
+	keywords_list = required_keywords.split(',')
 
 	driver, wait = initialize()
 	login(driver, wait)    
 	setting_search_condition(driver, wait)
 	
 	try:
-		for required_keyword in required_keywords:
+		for required_keyword in keywords_list:
 			try:
 				search_with_keywords(driver, wait, or_keywords, required_keyword)
+				print("현재 검색어: " + required_keyword)
 				print("브라우저가 열려 있습니다. 다운로드가 완료되면 Enter를 눌러 다음 검색으로 넘어가세요.")
 				input()
 			except Exception as e:
